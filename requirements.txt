@@ -1,0 +1,9 @@
+pandas
+tqdm
+spacy
+python-dotenv
+google-genai
+requests
+pydantic
+sqlalchemy
+psycopg[binary]
