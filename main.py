@@ -14,6 +14,7 @@ class Step:
         self.name = name
 
     def run(self, data):
+        """Run the step on the data and return the result."""
         return self.func(data)
 
 if __name__ == "__main__":

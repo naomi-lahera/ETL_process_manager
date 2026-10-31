@@ -3,6 +3,7 @@ from src.process.df_columns import dfColumns
 from src.process.transform.llm import summarize
 
 def row_summary(text, provider):
+    """Summarize one article, or return None if the LLM fails."""
     try:
         return summarize(text, provider)
     except Exception as e:
@@ -10,6 +11,7 @@ def row_summary(text, provider):
         return None
 
 def summary(data, provider=None):
+    """Add the LLM summary of each article."""
     data[dfColumns.summary.value] = [
         row_summary(text, provider)
         for text in tqdm(data[dfColumns.content.value], desc="Summary")

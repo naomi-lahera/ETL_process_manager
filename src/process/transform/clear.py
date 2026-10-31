@@ -3,12 +3,12 @@ from src.process.transform.nlp import nlp
 from src.process.df_columns import dfColumns
 
 def extract_entities(data):
+  """Return the (text, label) entities found in each row's content."""
   docs = nlp.pipe(data[dfColumns.content.value], batch_size=50)
   return [[(ent.text, ent.label_) for ent in doc.ents] for doc in docs]
 
-# Rules: a row is dropped if its date is missing or not a valid date, or if its content is empty.
-# A missing author is not an error, it becomes "anonymous".
 def keep_valid_rows(data):
+  """Drop rows with an invalid date or empty content; a missing author becomes "anonymous"."""
   dates = pd.to_datetime(data[dfColumns.fecha.value], errors="coerce")
   content = data[dfColumns.content.value].fillna("").astype(str).str.strip()
   data = data[dates.notna() & (content != "")].copy()
@@ -17,6 +17,7 @@ def keep_valid_rows(data):
   return data
 
 def clear(data):
+  """Drop invalid rows and add the named entities."""
   data = keep_valid_rows(data)
   data[dfColumns.ne.value] = extract_entities(data)
   return data

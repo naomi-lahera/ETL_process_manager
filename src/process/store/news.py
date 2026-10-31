@@ -5,6 +5,7 @@ from src.db.models import Author, News, Source, EntitySentiment
 from src.process.df_columns import dfColumns
 
 def get_id(session, model, name):
+    """Insert the author or source if new and return its id."""
     return session.scalar(
         insert(model).values(name=name)
         .on_conflict_do_update(index_elements=["name"], set_={"name": name})
@@ -12,6 +13,7 @@ def get_id(session, model, name):
     )
 
 def store(data, engine):
+    """Save each row as a news with its author, source and sentiments."""
     with Session(engine) as session:
         for row in data.to_dict("records"):
             session.add(News(

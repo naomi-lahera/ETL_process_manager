@@ -5,6 +5,7 @@ from src.process.transform.llm import entity_sentiments
 ENTITY_LABELS = {"PERSON", "ORG", "GPE", "LOC", "FAC", "EVENT", "PRODUCT"}
 
 def row_sentiments(text, entities, provider):
+    """Return the LLM sentiment of each relevant entity, or [] if none or the call fails."""
     names = sorted({name for name, label in entities if label in ENTITY_LABELS})
     if not names:
         return []
@@ -15,6 +16,7 @@ def row_sentiments(text, entities, provider):
         return []
 
 def sentiment(data, provider=None):
+    """Add the sentiment of each entity of each article."""
     rows = zip(data[dfColumns.content.value], data[dfColumns.ne.value])
     data[dfColumns.sentiments.value] = [
         row_sentiments(text, entities, provider)

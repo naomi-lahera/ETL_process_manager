@@ -24,6 +24,7 @@ class Summary(BaseModel):
     summary: str
 
 def gemini_chat(prompt: str) -> str:
+    """Send the prompt to Gemini and return its answer."""
     client = genai.Client(api_key=os.environ["GEMINI_API_KEY"], http_options={"timeout": TIMEOUT * 1000})
     r = client.models.generate_content(
         model=GEMINI_MODEL,
@@ -37,6 +38,7 @@ def gemini_chat(prompt: str) -> str:
     return r.text
 
 def nvidia_chat(prompt: str) -> str:
+    """Send the prompt to NVIDIA and return its answer."""
     r = requests.post(
         NVIDIA_URL,
         headers={"Authorization": f"Bearer {os.environ['NVIDIA_API_KEY']}", "Accept": "application/json"},
@@ -63,6 +65,7 @@ PROVIDERS = {
 }
 
 def chat(prompt: str, provider: str | None = None) -> str:
+    """Call the chosen provider first, falling back to the others with a key."""
     provider = provider or DEFAULT_PROVIDER
     names = [name for name, (key, _) in PROVIDERS.items() if os.getenv(key)]
     if provider in names:
@@ -78,10 +81,11 @@ def chat(prompt: str, provider: str | None = None) -> str:
     raise RuntimeError("All LLM providers failed")
 
 def only_json(text: str) -> str:
-    # some models wrap the answer in ```json fences
+    """Keep only the JSON object, since some models wrap it in ```json fences."""
     return text[text.index("{"): text.rindex("}") + 1]
 
 def summarize(text: str, provider: str | None = None) -> str:
+    """Return a 2-sentence summary of the article."""
     prompt = (
         "Summarize the article in 2 sentences. Use only what the article says.\n\n"
         'Answer ONLY with JSON: {"summary": "..."}\n\n'
@@ -90,6 +94,7 @@ def summarize(text: str, provider: str | None = None) -> str:
     return Summary.model_validate_json(only_json(chat(prompt, provider))).summary
 
 def entity_sentiments(text: str, entities: list[str], provider: str | None = None) -> list[Opinion]:
+    """Return the sentiment of each entity, merging names of the same one."""
     prompt = (
         "For each entity below, say whether the article portrays it positively, neutrally or negatively, "
         "with a short reason (max 15 words). Judge only what the article says, not your own opinion. "
