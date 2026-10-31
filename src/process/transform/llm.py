@@ -89,17 +89,6 @@ def summarize(text: str, provider: str | None = None) -> str:
     )
     return Summary.model_validate_json(only_json(chat(prompt, provider))).summary
 
-def summarize_errors(file: str, rows_read: int, errors: list[dict], provider: str | None = None) -> str:
-    problems = "\n".join(f"- row {e['row']}: {e['problems']}" for e in errors)
-    prompt = (
-        f"The news dataset '{file}' was loaded: {rows_read} rows read and {len(errors)} rows rejected. "
-        "Write one short report in plain language (max 4 sentences) saying what kinds of problems were found, "
-        "which rows are affected and how to fix them. Use only the problems listed below.\n\n"
-        'Answer ONLY with JSON: {"summary": "..."}\n\n'
-        f"Rejected rows:\n{problems}"
-    )
-    return Summary.model_validate_json(only_json(chat(prompt, provider))).summary
-
 def entity_sentiments(text: str, entities: list[str], provider: str | None = None) -> list[Opinion]:
     prompt = (
         "For each entity below, say whether the article portrays it positively, neutrally or negatively, "
