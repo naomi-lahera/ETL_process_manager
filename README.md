@@ -16,7 +16,7 @@ The sentiment step uses an LLM. Copy `.env.example` to `.env` and set `GEMINI_AP
 ## Usage
 
 ```bash
-./run.sh path/to/file.tsv [gemini|nvidia]
+python3 main.py path/to/file.tsv [gemini|nvidia]
 ```
 
 The optional second argument is the LLM provider to try first (`nvidia` by default). If it fails, the other available one is used.
@@ -61,17 +61,17 @@ The LLM works on the original article text:
 - **Summary:** short description of each article.
 - **Sentiment per entity:** it receives the entities extracted by spaCy and also merges variants of the same entity (`Starmer` and `Keir Starmer` become one), so the stored sentiments are not duplicated.
 
-Two providers are supported, NVIDIA (`mistralai/mistral-large-4-1t-a52b`, default) and Gemini. Only the providers with a key in `.env` are used, the one passed to `run.sh` goes first, and if it fails the other one is used as a fallback. A failed call never stops the process: that article is stored without summary or sentiments.
+Two providers are supported, NVIDIA (`mistralai/mistral-large-4-1t-a52b`, default) and Gemini. Only the providers with a key in `.env` are used, the one passed on the command line goes first, and if it fails the other one is used as a fallback. A failed call never stops the process: that article is stored without summary or sentiments.
 
 ## Examples
 
 ### Dropped rows
 
-`data_example/anomalies.tsv` has one correct news and one with an invalid date (`not available`). Run it with `./run.sh data_example/anomalies.tsv`: only the correct news goes on through the pipeline and is stored.
+`data_example/anomalies.tsv` has one correct news and one with an invalid date (`not available`). Run it with `python3 main.py data_example/anomalies.tsv`: only the correct news goes on through the pipeline and is stored.
 
 ### Processed news
 
-Two articles from `data_example/example.tsv`, run with `./run.sh data_example/example.tsv`. Output of the Transform steps for each one.
+Two articles from `data_example/example.tsv`, run with `python3 main.py data_example/example.tsv`. Output of the Transform steps for each one.
 
 ### Example 1: The Guardian, 2026-10-01
 
